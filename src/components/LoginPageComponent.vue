@@ -4,14 +4,14 @@
       <!-- /.login-logo -->
       <div class="card card-outline card-primary">
         <div class="card-header text-center">
-          <a href="../../index2.html" class="h1"><b>Weather</b>APP</a>
+          <a href="#" class="h1"><b>Weather</b>APP</a>
         </div>
         <div class="card-body">
           <p class="login-box-msg">Sign in to start your session</p>
 
-          <form action="../../index3.html" method="post">
+          <form >
             <div class="input-group mb-3">
-              <input type="email" class="form-control" placeholder="Email">
+              <input v-model="username" type="text" class="form-control" placeholder="Username">
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-envelope"></span>
@@ -19,7 +19,7 @@
               </div>
             </div>
             <div class="input-group mb-3">
-              <input type="password" class="form-control" placeholder="Password">
+              <input v-model="password" type="password" class="form-control" placeholder="Password">
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-lock"></span>
@@ -37,7 +37,7 @@
               </div>
               <!-- /.col -->
               <div class="col-4">
-                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                <button @click="login_attempt" type="submit" class="btn btn-primary btn-block">Sign In</button>
               </div>
               <!-- /.col -->
             </div>
@@ -61,10 +61,48 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+Vue.use(VueAxios,axios)
 export default {
   name: 'LoginPageComponent',
-  props: {
-    msg: String
+  data(){
+    return {
+      username: null,
+      password: null
+    }
+  },
+  methods:{
+    login_attempt: function (e){
+      e.preventDefault();
+      let credentials = {
+        'username': this.username,
+        'password': this.password
+      }
+      Vue.axios.post("http://weatherapi.tkouleris.eu/weather/authenticate", credentials)
+          .then(
+              response =>{
+                console.log(response.data.data.jwt)
+                localStorage.token = response.data.data.jwt;
+                localStorage.username = response.data.data.username;
+                localStorage.id = response.data.data.userid;
+                this.$router.push('/dashboard');
+              }
+          ).catch(
+              error => {
+                console.log(error);
+                alert('Wrong Username or Password')
+              }
+          );
+    },
+    loginAtEnterPressed(event){
+      if(event.keyCode !== 13){
+        return;
+      }
+      this.login_attempt();
+    }
   }
 }
 </script>

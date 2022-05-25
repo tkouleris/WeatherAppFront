@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from "vue-router";
 import LoginPageComponent from "@/components/LoginPageComponent";
+import DashboardComponent from "@/components/DashboardComponent";
 
 Vue.use(VueRouter);
 
@@ -9,7 +10,24 @@ const routes =[
         name:'login',
         path:'/login',
         component: LoginPageComponent,
-        props: true
+        beforeEnter:(to, from, next) =>{
+            if(localStorage.token != null){
+                next('/dashboard');
+            }else{
+                next();
+            }
+        }
+    },
+    {
+        path: '/dashboard',
+        component: DashboardComponent,
+        beforeEnter:(to, from, next) =>{
+            if(localStorage.token == null){
+                next('/login');
+            }else{
+                next();
+            }
+        }
     },
 ];
 
