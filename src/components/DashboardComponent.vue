@@ -848,11 +848,11 @@
               <h3>{{w.city_name}} - {{w.country}}</h3>
             </div>
 
-            <div class="col-12" v-for="c in w.weather" :key="c.timestamp">
+            <div class="col-12" v-for=" (c, index) in w.weather" :key="c.timestamp">
               <div class="row">
                 <div class="col-3 col-lg-3" >
                   <!-- small box -->
-                  <div class="small-box bg-info">
+                  <div class="small-box bg-olive">
                     <div class="inner">
                       <p>{{timestampToDay(c.timestamp)}}</p>
                       <h3>{{timestampToHour(c.timestamp)}}</h3>
@@ -861,17 +861,17 @@
                 </div>
                 <div class="col-3 col-lg-3" >
                   <!-- small box -->
-                  <div class="small-box bg-info">
+                  <div :class="temperatureClass(c.temperature)">
                     <div class="inner">
                       <p>Temperature</p>
-                      <h3>{{ round(c.temperature) }}<sup style="font-size: 20px">&#8451;</sup></h3>
+                      <h3>{{ round(c.temperature) }}<sup style="font-size: 20px;">&#8451;</sup></h3>
                     </div>
                   </div>
                 </div>
                 <!-- ./col -->
                 <div class="col-3 col-lg-3">
                   <!-- small box -->
-                  <div class="small-box bg-success">
+                  <div :class="humidityClass(c.humidity)">
                     <div class="inner">
                       <p>Humidity</p>
                       <h3>{{c.humidity}}<sup style="font-size: 20px">%</sup></h3>
@@ -881,7 +881,7 @@
                 <!-- ./col -->
                 <div class="col-3 col-lg-3">
                   <!-- small box -->
-                  <div class="small-box bg-warning">
+                  <div class="small-box bg-lightblue">
                     <div class="inner">
                       <p>{{ c.weather_description}}</p>
                     </div>
@@ -891,8 +891,9 @@
                 </div>
               </div>
               <!-- ./col -->
-
-              <hr>
+              <div  v-html="checkNextDay(w.weather, index)">
+              </div>
+<!--              <hr>-->
               <!-- ./col -->
             </div>
 <!--            <table>-->
@@ -1652,6 +1653,19 @@ export default {
       console.log(date.getDay());
       return weekday[date.getDay()];
     },
+    checkNextDay(weather_data, index)
+    {
+      if(weather_data[index+1] === undefined){
+        return "<hr/>"
+      }
+      let currentDay = this.timestampToDay(weather_data[index].timestamp);
+      let nextDay = this.timestampToDay(weather_data[index+1].timestamp);
+      if(currentDay !== nextDay){
+        console.log('yeeea')
+        return "<hr style='border: 1px dotted black' />";
+      }
+      return "";
+    },
     pad(num, size) {
       num = num.toString();
       while (num.length < size) num = "0" + num;
@@ -1659,7 +1673,25 @@ export default {
     },
     round(value){
       return Math.round(value)
-    }
+    },
+    humidityClass(humidity){
+      let hum = this.round(humidity);
+      if(hum > 60)
+        return 'small-box bg-danger'
+      if(hum < 30)
+        return 'small-box bg-info'
+      if(hum >= 30 && hum <= 60)
+        return 'small-box bg-success'
+    },
+    temperatureClass(temperature){
+      let temp = this.round(temperature);
+      if(temp > 25)
+        return 'small-box bg-danger'
+      if(temp < 10)
+        return 'small-box bg-info'
+      if(temp >=10 && temp <= 25)
+        return 'small-box bg-success'
+    },
   }
 }
 </script>
