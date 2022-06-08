@@ -81,7 +81,7 @@ export default {
         'username': this.username,
         'password': this.password
       }
-      Vue.axios.post("http://weatherapi.tkouleris.eu/weather/authenticate", credentials)
+      Vue.axios.post("http://localhost:8080/weather/authenticate", credentials)
           .then(
               response =>{
                 localStorage.token = response.data.data.jwt;

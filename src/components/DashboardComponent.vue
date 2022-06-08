@@ -849,7 +849,7 @@ export default {
     getWeather:function () {
       let self = this;
       this.initHeader();
-      Vue.axios.get('http://weatherapi.tkouleris.eu/weather/user/forecasts', this.header)
+      Vue.axios.get('http://localhost:8080/weather/forecasts', this.header)
           .then(response =>{
             // response.data.forEach(function (item){
             //   moment.unix(1)
@@ -916,7 +916,6 @@ export default {
       let currentDay = this.timestampToDay(weather_data[index].timestamp);
       let nextDay = this.timestampToDay(weather_data[index+1].timestamp);
       if(currentDay !== nextDay){
-        console.log('yeeea')
         return "<hr style='border: 1px dotted black' />";
       }
       return "";

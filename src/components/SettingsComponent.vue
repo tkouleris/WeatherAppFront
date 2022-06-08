@@ -644,7 +644,7 @@
           <div class="row" v-for="city in cities" :key="city.id" style="border-bottom: 1px dotted grey;padding-top: 10px;padding-bottom: 10px;margin-left:20px;">
             <div class="col-4">{{city.city_name}}</div>
             <div class="col-4"><button @click="addCity(city.id)">Add</button></div>
-            <div class="col-4"><button>Remove</button></div>
+            <div class="col-4"><button @click="removeCity(city.id)" >Remove</button></div>
           </div>
 
         </section>
@@ -698,7 +698,7 @@ export default {
     getCountries(){
       let self = this;
       this.initHeader()
-      Vue.axios.get('http://weatherapi.tkouleris.eu/weather/city/GR', this.header)
+      Vue.axios.get('http://localhost:8080/weather/city/GR', this.header)
           .then(response =>{
             self.cities = response.data
           })
@@ -716,10 +716,29 @@ export default {
     },
     addCity(city_id)
     {
-
       this.initHeader()
-      let url = 'http://weatherapi.tkouleris.eu/weather/user/city/' + city_id
-      Vue.axios.post(url, this.header)
+      let url = 'http://localhost:8080/weather/city'
+      Vue.axios.post(url, {id:city_id},this.header)
+          .then(response =>{
+            console.log(response);
+          })
+          .catch(
+              error => {
+                console.log(error)
+                if (error.response.status === 401) {
+                  localStorage.clear();
+                  this.$router.push('/login');
+                  return;
+                }
+                alert('You are logged out')
+              }
+          );
+    },
+    removeCity(city_id){
+      this.initHeader()
+      console.log(this.header);
+      let url = 'http://localhost:8080/weather/delete'
+      Vue.axios.post(url,{id:city_id}, this.header)
           .then(response =>{
             console.log(response);
           })
